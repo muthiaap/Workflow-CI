@@ -1,0 +1,45 @@
+name: CI - MLflow Retraining
+
+# Trigger: setiap push ke branch main, pull request, atau dijalankan manual
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  retrain-model:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Setup Python
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # 3. Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mlflow==2.19.0 pandas==2.3.3 numpy==2.5.1 scikit-learn==1.9.0
+
+      # 4. Jalankan MLflow Project (retraining)
+      #    --env-manager=local memakai environment yang sudah di-install di atas
+      - name: Run MLflow Project
+        working-directory: MLProject
+        run: |
+          mlflow run . --env-manager=local
+
+      # 5. Simpan artefak hasil training (folder mlruns) ke repository GitHub
+      - name: Upload MLflow artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: mlflow-model-artifacts
+          path: MLProject/mlruns/
+          retention-days: 30
