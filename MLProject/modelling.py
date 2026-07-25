@@ -1,12 +1,3 @@
-"""
-modelling.py (MLflow Project entry point)
-=========================================
-Script training untuk CI. Dijalankan melalui `mlflow run` sehingga menerima
-parameter dari file MLProject. Model dilatih dan dicatat ke MLflow tracking
-lokal (folder mlruns), yang kemudian diunggah sebagai artefak oleh GitHub
-Actions.
-"""
-
 import argparse
 import os
 
@@ -41,7 +32,6 @@ def main():
 
     X_train, X_test, y_train, y_test = load_data(args.data_path)
 
-    # autolog + manual logging metrik evaluasi
     mlflow.sklearn.autolog()
 
     with mlflow.start_run(run_name="CI_RandomForest"):
